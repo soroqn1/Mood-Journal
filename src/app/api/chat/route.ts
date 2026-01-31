@@ -22,25 +22,6 @@ export async function POST(req: Request) {
         const result = await chat.sendMessage(message);
         const aiResponse = result.response.text();
 
-        if (chatId) {
-            await supabase.from('messages').insert([
-                { chat_id: chatId, role: 'user', content: message },
-                { chat_id: chatId, role: 'ai', content: aiResponse }
-            ]);
-
-            if (!history || history.length === 0) {
-                const newTitle = message.trim().substring(0, 40) + (message.length > 40 ? "..." : "");
-                const { error: updateError } = await supabase
-                    .from('chats')
-                    .update({ title: newTitle })
-                    .eq('id', chatId);
-
-                if (updateError) {
-                    console.error("Failed to update chat title:", updateError.message);
-                }
-            }
-        }
-
         return NextResponse.json({ reply: aiResponse });
     } catch (error: any) {
         console.error("Error:", error);

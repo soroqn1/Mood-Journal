@@ -23,13 +23,20 @@ export default function ChatForm({ chatId }: ChatFormProps) {
 
     useEffect(() => {
         const fetchMessages = async () => {
+            setMessages([]);
             const { data, error } = await supabase
                 .from("messages")
                 .select("role, content")
                 .eq("chat_id", chatId)
                 .order("created_at", { ascending: true });
 
-            if (!error && data) {
+            if (error) {
+                console.error("Error fetching messages:", error.message);
+                alert("Could not load messages: " + error.message);
+                return;
+            }
+
+            if (data) {
                 setMessages(data as Message[]);
             }
         };
@@ -47,19 +54,28 @@ export default function ChatForm({ chatId }: ChatFormProps) {
 
     const sendMessage = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!input.trim() || isLoading) return;
+        const currentInput = input.trim();
+        if (!currentInput || isLoading) return;
 
-        const userMessage: Message = { role: "user", content: input };
+        const userMessage: Message = { role: "user", content: currentInput };
         setMessages((prev) => [...prev, userMessage]);
         setInput("");
         setIsLoading(true);
 
         try {
+            const { error: userError } = await supabase.from('messages').insert({
+                chat_id: chatId,
+                role: 'user',
+                content: currentInput
+            });
+
+            if (userError) throw userError;
+
             const response = await fetch("/api/chat", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    message: input,
+                    message: currentInput,
                     history: messages,
                     chatId: chatId
                 }),
@@ -68,16 +84,26 @@ export default function ChatForm({ chatId }: ChatFormProps) {
             const data = await response.json();
             if (!response.ok) throw new Error(data.error || "Failed");
 
+            const { error: aiError } = await supabase.from('messages').insert({
+                chat_id: chatId,
+                role: 'ai',
+                content: data.reply
+            });
+
+            if (aiError) throw aiError;
+
             setMessages((prev) => [...prev, { role: "ai", content: data.reply }]);
 
             if (messages.length === 0) {
-                const newTitle = input.trim().substring(0, 40) + (input.length > 40 ? "..." : "");
+                const newTitle = currentInput.substring(0, 40) + (currentInput.length > 40 ? "..." : "");
                 await supabase
                     .from('chats')
                     .update({ title: newTitle })
                     .eq('id', chatId);
             }
         } catch (err: any) {
+            console.error("SendMessage Error:", err);
+            alert("Database Error: " + (err.message || "Could not save message"));
             setMessages((prev) => [...prev, { role: "ai", content: `Error: ${err.message}` }]);
         } finally {
             setIsLoading(false);
