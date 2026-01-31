@@ -1,18 +1,16 @@
 import { NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { supabase } from "@/lib/supabase";
 
-// initialize gemini client
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
-
-// configure model with psychologist role
 const model = genAI.getGenerativeModel({
     model: "gemini-flash-latest",
-    systemInstruction: "You are an empathetic mood journal assistant. Your goal is to help users reflect on their day. Be supportive, ask open-ended questions about emotions, and keep responses concise. Support both English and Ukrainian languages."
+    systemInstruction: "You are an empathetic mood journal assistant..."
 });
 
 export async function POST(req: Request) {
     try {
-        const { message, history } = await req.json();
+        const { message, history, chatId } = await req.json();
 
         const chat = model.startChat({
             history: history.map((m: any) => ({
@@ -22,10 +20,26 @@ export async function POST(req: Request) {
         });
 
         const result = await chat.sendMessage(message);
-        const response = await result.response;
+        const aiResponse = result.response.text();
 
-        return NextResponse.json({ reply: response.text() });
+        if (chatId) {
+            await supabase.from('messages').insert([
+                { chat_id: chatId, role: 'user', content: message },
+                { chat_id: chatId, role: 'ai', content: aiResponse }
+            ]);
+
+            if (history.length === 0) {
+                const newTitle = message.length > 30 ? message.substring(0, 30) + "..." : message;
+                await supabase
+                    .from('chats')
+                    .update({ title: newTitle })
+                    .eq('id', chatId);
+            }
+        }
+
+        return NextResponse.json({ reply: aiResponse });
     } catch (error: any) {
+        console.error("Error:", error);
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }
