@@ -1,36 +1,61 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Mood Journal - AI Reflection Space
 
-## Getting Started
+![alt text](image.png)
 
-First, run the development server:
+A clean, minimal, and empathetic AI-powered mood journal designed with a Notion-inspired aesthetic. Built for deep self-reflection and privacy.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## ✨ Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **AI Empathy:** Powered by Google Gemini. Deep listening without generic medical disclaimers.
+- **Notion Aesthetic:** Premium dark mode, glassmorphism, and minimal typography.
+- **Secure Auth:** Full authentication flow via Supabase (Sign In/Up).
+- **Guest Mode:** Quick anonymous access for instant testing without registration.
+- **Real-time Sync:** Instant updates across sessions via Supabase Realtime.
+- **Fully Responsive:** Seamless transitions between desktop and mobile.
+- **Live Deployment:** Ready for production with optimized builds.
+- **Privacy First:** Secure data isolation using RLS policies.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🛠 Tech Stack
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Framework:** [Next.js 15](https://nextjs.org/) (App Router)
+- **Styling:** [Tailwind CSS 4](https://tailwindcss.com/) + [Shadcn UI](https://ui.shadcn.com/)
+- **Backend/Auth:** [Supabase](https://supabase.com/)
+- **AI Engine:** [Google Gemini API](https://ai.google.dev/)
+- **Icons:** [Lucide React](https://lucide.dev/)
 
-## Learn More
+## 🚀 Quick Start
 
-To learn more about Next.js, take a look at the following resources:
+1. **Clone & Install**
+   ```bash
+   git clone https://github.com/soroqn1/Mood-Journal.git
+   cd mood-journal
+   npm install
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. **Environment Setup**
+   Create a `.env.local` file:
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=your_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_key
+   GEMINI_API_KEY=your_gemini_key
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+3. **Database Setup**
+   Run the following in your Supabase SQL Editor to enable chat features:
+   ```sql
+   -- Create tables and RLS policies (see docs/setup.sql for full schema)
+   ```
 
-## Deploy on Vercel
+4. **Run Development**
+   ```bash
+   npm run dev
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🎨 Design Principles
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Minimalism:** No unnecessary buttons or distractions.
+- **Focus:** Your thoughts are at the center of the experience.
+- **Fluidity:** Smooth animations and instant interactions.
+
+---
+*Created with focus on mental well-being and clean code.*
