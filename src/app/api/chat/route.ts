@@ -12,24 +12,20 @@ const model = genAI.getGenerativeModel({
 
 export async function POST(req: Request) {
     try {
-        const { message } = await req.json();
+        const { message, history } = await req.json();
 
-        if (!message) {
-            return NextResponse.json({ error: "No message provided" }, { status: 400 });
-        }
+        const chat = model.startChat({
+            history: history.map((m: any) => ({
+                role: m.role === "user" ? "user" : "model",
+                parts: [{ text: m.content }],
+            })),
+        });
 
-        // send request to gemini
-        const result = await model.generateContent(message);
+        const result = await chat.sendMessage(message);
         const response = await result.response;
-        const text = response.text();
 
-        return NextResponse.json({ reply: text });
+        return NextResponse.json({ reply: response.text() });
     } catch (error: any) {
-        console.error("Gemini Error:", error);
-
-        return NextResponse.json(
-            { error: error.message || "Internal Server Error" },
-            { status: 500 }
-        );
+        return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }
