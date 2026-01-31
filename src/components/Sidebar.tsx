@@ -39,9 +39,10 @@ export default function Sidebar({ activeChatId, onSelectChat }: SidebarProps) {
     };
 
     const createNewChat = async () => {
+        const { data: userData } = await supabase.auth.getUser();
         const { data, error } = await supabase
             .from('chats')
-            .insert([{ title: `Chat ${chats.length + 1}` }])
+            .insert([{ title: `Chat ${chats.length + 1}`, user_id: userData.user?.id }])
             .select()
             .single();
 
