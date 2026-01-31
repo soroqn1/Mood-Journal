@@ -68,33 +68,44 @@ export default function Sidebar({ activeChatId, onSelectChat }: SidebarProps) {
 
     const deleteChat = async (e: React.MouseEvent, id: string) => {
         e.stopPropagation();
+
         try {
-            // First delete all messages in this chat
+            // 1. Delete messages first (to satisfy FK constraints if CASCADE is not set)
             const { error: msgError } = await supabase
                 .from('messages')
                 .delete()
                 .eq('chat_id', id);
 
-            if (msgError) {
-                console.error("Error deleting messages:", msgError.message);
-            }
+            if (msgError) console.warn("Note: Error deleting messages:", msgError.message);
 
-            // Then delete the chat
-            const { error } = await supabase
+            // 2. Delete the chat itself
+            // We use .select() to verify if a row was actually removed
+            const { data, error } = await supabase
                 .from('chats')
                 .delete()
-                .eq('id', id);
+                .eq('id', id)
+                .eq('user_id', user?.id)
+                .select();
 
             if (error) {
-                console.error("Error deleting chat:", error.message);
-                alert("Failed to delete journal. Check your permissions (RLS).");
+                console.error("Supabase error:", error);
+                alert(`Error: ${error.message}`);
                 return;
             }
 
+            // If no data was returned, it means RLS blocked it or the row didn't exist
+            if (!data || data.length === 0) {
+                alert("Could not delete. You might not have permission to delete this journal (check Supabase RLS policies).");
+                return;
+            }
+
+            // 3. Update local state only after confirmation from DB
             setChats(prev => prev.filter(chat => chat.id !== id));
             if (activeChatId === id) onSelectChat("");
+
         } catch (err: any) {
-            console.error("Unexpected error deleting chat:", err);
+            console.error("Critical error during deletion:", err);
+            alert("An unexpected error occurred.");
         }
     };
 
