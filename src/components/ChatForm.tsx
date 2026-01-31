@@ -111,41 +111,41 @@ export default function ChatForm({ chatId }: ChatFormProps) {
     };
 
     return (
-        <div className="flex flex-col h-full w-full max-w-3xl mx-auto px-4">
-            <header className="py-8 flex items-center justify-between border-b border-border/50 sticky top-0 bg-background/80 backdrop-blur-md z-10">
+        <div className="flex flex-col h-full w-full max-w-3xl mx-auto md:px-4">
+            <header className="py-4 md:py-8 flex items-center justify-between border-b border-border/50 sticky top-0 bg-background/80 backdrop-blur-md z-10 px-4 md:px-0">
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-                        <Sparkles size={20} />
+                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                        <Sparkles size={16} className="md:w-5 md:h-5" />
                     </div>
                     <div>
-                        <h2 className="font-bold text-xl tracking-tight">Daily Reflection</h2>
-                        <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Mood Assistant • Session {chatId.slice(0, 4)}</p>
+                        <h2 className="font-bold text-lg md:text-xl tracking-tight">Daily Reflection</h2>
+                        <p className="text-[10px] md:text-xs text-muted-foreground font-medium uppercase tracking-wider">Mood Assistant • Session {chatId.slice(0, 4)}</p>
                     </div>
                 </div>
             </header>
 
             <div
                 ref={scrollRef}
-                className="flex-1 overflow-y-auto py-8 space-y-10 scroll-smooth no-scrollbar"
+                className="flex-1 overflow-y-auto py-4 md:py-8 space-y-6 md:space-y-10 scroll-smooth no-scrollbar px-4 md:px-0"
             >
                 {messages.length === 0 && !isLoading && (
-                    <div className="flex flex-col items-center justify-center h-full text-center space-y-4 animate-in fade-in zoom-in duration-1000">
-                        <div className="text-4xl mb-4 grayscale opacity-50">✍️</div>
-                        <h3 className="text-xl font-semibold">How are you feeling today?</h3>
-                        <p className="text-muted-foreground max-w-sm">
+                    <div className="flex flex-col items-center justify-center h-full text-center space-y-4 animate-in fade-in zoom-in duration-1000 px-4">
+                        <div className="text-3xl md:text-4xl mb-2 md:mb-4 grayscale opacity-50">✍️</div>
+                        <h3 className="text-lg md:text-xl font-semibold">How are you feeling today?</h3>
+                        <p className="text-sm md:text-base text-muted-foreground max-w-sm">
                             Take a moment to describe your current state of mind. I'm here to listen and help you navigate your emotions.
                         </p>
                     </div>
                 )}
 
                 {messages.map((m, i) => (
-                    <div key={i} className={`flex gap-4 animate-in fade-in slide-in-from-bottom-2 duration-500 ${m.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
-                        <div className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center mt-1 ${m.role === 'user' ? 'bg-foreground text-background' : 'bg-muted text-muted-foreground border border-border'
+                    <div key={i} className={`flex gap-3 md:gap-4 animate-in fade-in slide-in-from-bottom-2 duration-500 ${m.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
+                        <div className={`w-7 h-7 md:w-8 md:h-8 rounded-full flex-shrink-0 flex items-center justify-center mt-1 ${m.role === 'user' ? 'bg-foreground text-background' : 'bg-muted text-muted-foreground border border-border'
                             }`}>
-                            {m.role === 'user' ? <User size={14} /> : <Bot size={14} />}
+                            {m.role === 'user' ? <User size={12} className="md:w-3.5 md:h-3.5" /> : <Bot size={12} className="md:w-3.5 md:h-3.5" />}
                         </div>
-                        <div className={`max-w-[80%] space-y-1 ${m.role === 'user' ? 'text-right' : 'text-left'}`}>
-                            <div className={`p-4 rounded-2xl text-[15px] leading-relaxed shadow-sm ${m.role === 'user'
+                        <div className={`max-w-[85%] md:max-w-[80%] space-y-1 ${m.role === 'user' ? 'text-right' : 'text-left'}`}>
+                            <div className={`p-3 md:p-4 rounded-2xl text-sm md:text-[15px] leading-relaxed shadow-sm ${m.role === 'user'
                                 ? 'bg-foreground text-background rounded-tr-none'
                                 : 'bg-muted/50 border border-border/50 text-foreground rounded-tl-none'
                                 }`}>
@@ -156,33 +156,33 @@ export default function ChatForm({ chatId }: ChatFormProps) {
                 ))}
 
                 {isLoading && (
-                    <div className="flex gap-4 animate-pulse">
-                        <div className="w-8 h-8 rounded-full bg-muted border border-border flex items-center justify-center">
-                            <Bot size={14} className="text-muted-foreground" />
+                    <div className="flex gap-3 md:gap-4 animate-pulse">
+                        <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-muted border border-border flex items-center justify-center">
+                            <Bot size={12} className="text-muted-foreground" />
                         </div>
-                        <div className="bg-muted/30 border border-border/30 w-32 h-10 rounded-2xl"></div>
+                        <div className="bg-muted/30 border border-border/30 w-24 md:w-32 h-8 md:h-10 rounded-2xl"></div>
                     </div>
                 )}
             </div>
 
-            <footer className="py-8 bg-background sticky bottom-0">
+            <footer className="py-4 md:py-8 bg-background sticky bottom-0 px-4 md:px-0">
                 <form onSubmit={sendMessage} className="relative group">
                     <Input
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         placeholder="Type your reflection..."
                         disabled={isLoading}
-                        className="h-14 pl-6 pr-14 bg-background border-2 border-border/50 focus:border-foreground/20 rounded-2xl text-[15px] shadow-sm transition-all outline-none ring-0 focus-visible:ring-0"
+                        className="h-12 md:h-14 pl-4 md:pl-6 pr-12 md:pr-14 bg-background border-2 border-border/50 focus:border-foreground/20 rounded-2xl text-sm md:text-[15px] shadow-sm transition-all outline-none ring-0 focus-visible:ring-0"
                     />
                     <button
                         type="submit"
                         disabled={isLoading || !input.trim()}
-                        className="absolute right-3 top-2.5 w-9 h-9 flex items-center justify-center rounded-xl bg-foreground text-background hover:bg-foreground/90 disabled:opacity-30 disabled:hover:bg-foreground transition-all"
+                        className="absolute right-2 top-1.5 md:right-3 md:top-2.5 w-9 h-9 flex items-center justify-center rounded-xl bg-foreground text-background hover:bg-foreground/90 disabled:opacity-30 disabled:hover:bg-foreground transition-all"
                     >
-                        <Send size={18} />
+                        <Send size={16} className="md:w-4.5 md:h-4.5" />
                     </button>
                 </form>
-                <p className="text-center mt-4 text-[11px] text-muted-foreground font-medium uppercase tracking-widest">
+                <p className="hidden md:block text-center mt-4 text-[11px] text-muted-foreground font-medium uppercase tracking-widest">
                     Your journal is private and encrypted
                 </p>
             </footer>

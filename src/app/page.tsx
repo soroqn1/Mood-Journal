@@ -5,12 +5,13 @@ import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import Sidebar from "@/components/Sidebar";
 import ChatForm from "@/components/ChatForm";
-import { Plus } from "lucide-react";
+import { Plus, Menu, X } from "lucide-react";
 
 export default function Home() {
   const [user, setUser] = useState<any>(null);
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -30,16 +31,36 @@ export default function Home() {
   if (!user) return null;
 
   return (
-    <div className="flex h-screen bg-background text-foreground font-sans selection:bg-primary/30">
-      <Sidebar activeChatId={activeChatId} onSelectChat={setActiveChatId} />
-      <main className="flex-1 flex flex-col overflow-hidden relative">
-        <div className="absolute top-0 left-0 right-0 h-10 px-4 flex items-center justify-between pointer-events-none">
-          <div className="flex items-center gap-2 text-muted-foreground">
-            {/* Optional top bar items could go here */}
-          </div>
-        </div>
+    <div className="flex h-screen bg-background text-foreground font-sans selection:bg-primary/30 overflow-hidden">
+      <div className={`
+        fixed inset-0 z-40 bg-background/80 backdrop-blur-sm lg:hidden transition-opacity
+        ${isSidebarOpen ? "opacity-100" : "opacity-0 pointer-events-none"}
+      `} onClick={() => setIsSidebarOpen(false)} />
 
-        <div className="flex-1 flex flex-col items-center justify-center p-8 overflow-y-auto">
+      <div className={`
+        fixed inset-y-0 left-0 z-50 w-64 transform lg:relative lg:translate-x-0 transition-transform duration-300 ease-in-out
+        ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
+      `}>
+        <Sidebar
+          activeChatId={activeChatId}
+          onSelectChat={(id) => {
+            setActiveChatId(id);
+            setIsSidebarOpen(false);
+          }}
+        />
+      </div>
+
+      <main className="flex-1 flex flex-col overflow-hidden relative w-full">
+        <header className="lg:hidden flex items-center h-14 px-4 border-b border-border absolute top-0 left-0 right-0 bg-background z-20">
+          <button onClick={() => setIsSidebarOpen(true)} className="p-2 -ml-2">
+            <Menu size={20} />
+          </button>
+          <div className="flex-1 text-center font-semibold text-sm truncate px-4">
+            Mood Journal
+          </div>
+        </header>
+
+        <div className="lg:mt-0 flex-1 flex flex-col items-center justify-center p-4 md:p-8 overflow-y-auto mt-14">
           {activeChatId ? (
             <ChatForm chatId={activeChatId} />
           ) : (
