@@ -69,6 +69,14 @@ export default function ChatForm({ chatId }: ChatFormProps) {
             if (!response.ok) throw new Error(data.error || "Failed");
 
             setMessages((prev) => [...prev, { role: "ai", content: data.reply }]);
+
+            if (messages.length === 0) {
+                const newTitle = input.trim().substring(0, 40) + (input.length > 40 ? "..." : "");
+                await supabase
+                    .from('chats')
+                    .update({ title: newTitle })
+                    .eq('id', chatId);
+            }
         } catch (err: any) {
             setMessages((prev) => [...prev, { role: "ai", content: `Error: ${err.message}` }]);
         } finally {
